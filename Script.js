@@ -1,110 +1,65 @@
-// window.onload = () => {
-//     const form1 = document.querySelector("#addForm");
+const form = document.getElementById('form')
+const input = document.getElementById('input')
+const todosUL = document.getElementById('todos')
 
-//     let items = document.getElementById("items");
-//     let submit = document.getElementById("submit");
+const todos = JSON.parse(localStorage.getItem('todos'))
 
-//     let editItem = null;
+if(todos) {
+    todos.forEach(todo => addTodo(todo))
+}
 
-//     form1.addEventListener("submit", addItem);
-//     items.addEventListener("click", removeItem);
-// };
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
 
-// function addItem(e) {
-//     e.preventDefault();
+    addTodo()
+})
 
-//     if (submit.value != "Submit") {
-//         editItem.target.parentNode.childNodes[0].data
-//             = document.getElementById("item").value;
+function addTodo(todo) {
+    let todoText = input.value
 
-//         submit.value = "Submit";
-//         document.getElementById("item").value = "";
-
-//         document.getElementById("lblsuccess").innerHTML
-//             = "Text edited successfully";
-
-//         document.getElementById("lblsuccess")
-//                         .style.display = "block";
-
-//         setTimeout(function() {
-//             document.getElementById("lblsuccess")
-//                             .style.display = "none";
-//         }, 3000);
-
-//         return false;
-//     }
-
-//     let newItem = document.getElementById("item").value;
-//     if (newItem.trim() == "" || newItem.trim() == null)
-//         return false;
-//     else
-//         document.getElementById("item").value = "";
-
-//     let li = document.createElement("li");
-//     li.className = "list-group-item";
-
-//     let deleteButton = document.createElement("button");
-
-//     deleteButton.className =
-//         "btn-danger btn btn-sm float-right delete";
-
-//     deleteButton.appendChild(document.createTextNode("Delete"));
-
-//     let editButton = document.createElement("button");
-
-//     editButton.className =
-//             "btn-success btn btn-sm float-right edit";
-
-//     editButton.appendChild(document.createTextNode("Edit"));
-
-//     li.appendChild(document.createTextNode(newItem));
-//     li.appendChild(deleteButton);
-//     li.appendChild(editButton);
-
-//     items.appendChild(li);
-// }
-
-// function removeItem(e) {
-//     e.preventDefault();
-//     if (e.target.classList.contains("delete")) {
-//         if (confirm("Are you Sure?")) {
-//             let li = e.target.parentNode;
-//             items.removeChild(li);
-//             document.getElementById("lblsuccess").innerHTML
-//                 = "Text deleted successfully";
-
-//             document.getElementById("lblsuccess")
-//                         .style.display = "block";
-
-//             setTimeout(function() {
-//                 document.getElementById("lblsuccess")
-//                         .style.display = "none";
-//             }, 3000);
-//         }
-//     }
-//     if (e.target.classList.contains("edit")) {
-//         document.getElementById("item").value =
-//             e.target.parentNode.childNodes[0].data;
-//         submit.value = "EDIT";
-//         editItem = e;
-//     }
-// }
-
-// function toggleButton(ref, btnID) {
-//     document.getElementById(btnID).disabled = false;
-// }
-
-
-document.getElementById('addTaskBtn').addEventListener('click', function() {
-    const taskInput = document.getElementById('taskInput');
-    const taskText = taskInput.value;
-  
-    if (taskText.trim() !== "") {
-      const taskList = document.getElementById('taskList');
-      const newTask = document.createElement('li');
-      newTask.textContent = taskText;
-      taskList.appendChild(newTask);
-      taskInput.value = ""; // Clear input after adding the task
+    if(todo) {
+        todoText = todo.text
     }
-  });
-  
+
+    if(todoText) {
+        const todoEl = document.createElement('li')
+        if(todo && todo.completed) {
+            todoEl.classList.add('completed')
+        }
+
+        todoEl.innerText = todoText
+
+        todoEl.addEventListener('click', () => {
+            todoEl.classList.toggle('completed')
+            updateLS()
+        }) 
+
+        todoEl.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+
+            todoEl.remove()
+            updateLS()
+        }) 
+
+        todosUL.appendChild(todoEl)
+
+        input.value = ''
+
+        updateLS()
+    }
+}
+
+function updateLS() {
+    todosEl = document.querySelectorAll('li')
+
+    const todos = []
+
+    todosEl.forEach(todoEl => {
+        todos.push({
+            text: todoEl.innerText,
+            completed: todoEl.classList.contains('completed')
+        })
+    })
+
+    localStorage.setItem('todos', JSON.stringify(todos))
+}
